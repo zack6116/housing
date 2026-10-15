@@ -47,9 +47,34 @@ footer{text-align:center;font-size:.78rem;color:#999;padding:1.5rem 1rem}
 <table><thead><tr><th>面积</th><th>成交价</th><th>单价</th><th>成交日期</th></tr></thead><tbody id="dealList"></tbody></table></section>
 <section><h2>出租房源 <span class="badge" id="rentCount"></span></h2>
 <table><thead><tr><th>户型</th><th>面积</th><th>月租金</th><th>备注</th></tr></thead><tbody id="rentList"></tbody></table></section>
+
+<section><h2>想查的小区</h2>
+<p style="font-size:.85rem;color:#555;margin-bottom:.8rem">没找到你想查的小区？留个言，站长看到后会去采集上架。</p>
+<form id="msgForm" style="display:flex;flex-direction:column;gap:.7rem">
+<input id="fName" placeholder="小区名称（必填），如：保利时代" style="padding:.6rem;border:1px solid #ddd;border-radius:8px;font-size:.9rem" required>
+<input id="fArea" placeholder="大概位置（选填），如：光谷天地附近" style="padding:.6rem;border:1px solid #ddd;border-radius:8px;font-size:.9rem">
+<input id="fContact" placeholder="联系方式（选填，微信/手机）" style="padding:.6rem;border:1px solid #ddd;border-radius:8px;font-size:.9rem">
+<button type="submit" style="background:#1a56db;color:#fff;border:none;border-radius:8px;padding:.7rem;font-size:.95rem;cursor:pointer">提交留言</button>
+<p id="msgTip" style="font-size:.85rem"></p>
+</form>
+<script>
+document.getElementById('msgForm').addEventListener('submit',async e=>{
+e.preventDefault();
+const tip=document.getElementById('msgTip');
+tip.style.color='#666';tip.textContent='提交中…';
+try{
+const r=await fetch('/api/message',{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({name:document.getElementById('fName').value.trim(),area:document.getElementById('fArea').value.trim(),contact:document.getElementById('fContact').value.trim()})});
+const j=await r.json();
+if(j.ok){tip.style.color='#16a34a';tip.textContent='已收到，站长会尽快处理！';e.target.reset();}
+else{tip.style.color='#e11d48';tip.textContent=j.error||'提交失败，请重试';}
+}catch(err){tip.style.color='#e11d48';tip.textContent='网络错误，请重试';}
+});
+</script>
+</section>
 <section><h2>数据来源</h2><p id="sources" style="font-size:.85rem;color:#555"></p></section>
 </main>
-<footer>光谷房产信息 · guanggu.coderfather.com · <span id="updateDate"></span>更新</footer>
+<footer>光谷房产信息 · guanggu.aipricegood.com · <span id="updateDate"></span>更新</footer>
 <script>
 const COMMUNITIES=[
 {name:"新世界恒大华府",file:"data-hengdahuafu.json"},
