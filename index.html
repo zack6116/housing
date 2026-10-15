@@ -3,17 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>新世界恒大华府 · 光谷二手房/租房信息</title>
+<title>光谷房产信息 · 小区二手房/租房</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:#f5f6f8;color:#1a1a1a;line-height:1.6}
-header{background:linear-gradient(135deg,#1a56db,#0e3a9e);color:#fff;padding:2.2rem 1.2rem;text-align:center}
-header h1{font-size:1.6rem;margin-bottom:.4rem}
-header p{opacity:.85;font-size:.9rem}
-.stats{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-top:1.2rem}
-.stat{background:rgba(255,255,255,.15);border-radius:10px;padding:.7rem 1.2rem;min-width:120px}
-.stat b{display:block;font-size:1.3rem}
-.stat span{font-size:.8rem;opacity:.85}
+header{background:linear-gradient(135deg,#1a56db,#0e3a9e);color:#fff;padding:2rem 1.2rem 1.4rem;text-align:center}
+header h1{font-size:1.5rem;margin-bottom:.3rem}
+header p{opacity:.85;font-size:.85rem}
+.tabs{display:flex;gap:.6rem;justify-content:center;margin-top:1.1rem;flex-wrap:wrap}
+.tab{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:20px;padding:.45rem 1.3rem;font-size:.9rem;cursor:pointer}
+.tab.active{background:#fff;color:#1a56db;font-weight:700}
+.stats{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-top:1.1rem}
+.stat{background:rgba(255,255,255,.15);border-radius:10px;padding:.7rem 1.2rem;min-width:110px}
+.stat b{display:block;font-size:1.25rem}
+.stat span{font-size:.78rem;opacity:.85}
 main{max-width:960px;margin:0 auto;padding:1.2rem}
 section{background:#fff;border-radius:12px;padding:1.2rem;margin-bottom:1.2rem;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 h2{font-size:1.15rem;margin-bottom:.8rem;border-left:4px solid #1a56db;padding-left:.6rem}
@@ -30,56 +33,71 @@ footer{text-align:center;font-size:.78rem;color:#999;padding:1.5rem 1rem}
 </head>
 <body>
 <header>
-<h1>新世界恒大华府</h1>
-<p>武汉 · 东湖高新区 · 光谷 &nbsp;|&nbsp; 珞瑜东路光谷一路10号</p>
+<h1>光谷房产信息</h1>
+<p>武汉 · 东湖高新区 · 小区二手房 / 出租公开信息聚合</p>
+<div class="tabs" id="tabs"></div>
 <div class="stats" id="stats"></div>
 </header>
 <main>
-<div class="note">数据来自公开房源平台（安居客、房天下），采集于 2026-10-15，仅供参考，不构成购房建议。房源实时变动，请以平台最新信息为准。</div>
-
-<section>
-<h2>小区概况</h2>
-<p id="profile" style="font-size:.9rem;color:#333"></p>
-</section>
-
-<section>
-<h2>在售二手房 <span class="badge" id="saleCount"></span></h2>
-<table><thead><tr><th>户型</th><th>面积</th><th>总价</th><th>单价</th><th>朝向</th><th>备注</th></tr></thead><tbody id="saleList"></tbody></table>
-</section>
-
-<section>
-<h2>近期成交</h2>
-<table><thead><tr><th>面积</th><th>成交价</th><th>单价</th><th>成交日期</th></tr></thead><tbody id="dealList"></tbody></table>
-</section>
-
-<section>
-<h2>出租房源 <span class="badge" id="rentCount"></span></h2>
-<table><thead><tr><th>户型</th><th>面积</th><th>月租金</th><th>朝向</th><th>楼层</th></tr></thead><tbody id="rentList"></tbody></table>
-</section>
-
-<section>
-<h2>数据来源</h2>
-<p style="font-size:.85rem;color:#555">均价/在售：安居客移动站 · 成交/出租：房天下 · 贝壳因人机验证未能获取，已跳过。<br>官方登记名"新世界恒大华府"（东湖高新区官网文件），"新世纪恒大华府"系常见误记。</p>
-</section>
+<div class="note" id="disclaimer"></div>
+<section><h2>小区概况</h2><p id="profile" style="font-size:.9rem;color:#333"></p></section>
+<section><h2>在售二手房 <span class="badge" id="saleCount"></span></h2>
+<table><thead><tr><th>户型</th><th>面积</th><th>总价</th><th>单价</th><th>朝向</th><th>备注</th></tr></thead><tbody id="saleList"></tbody></table></section>
+<section id="dealSection"><h2>近期成交</h2>
+<table><thead><tr><th>面积</th><th>成交价</th><th>单价</th><th>成交日期</th></tr></thead><tbody id="dealList"></tbody></table></section>
+<section><h2>出租房源 <span class="badge" id="rentCount"></span></h2>
+<table><thead><tr><th>户型</th><th>面积</th><th>月租金</th><th>备注</th></tr></thead><tbody id="rentList"></tbody></table></section>
+<section><h2>数据来源</h2><p id="sources" style="font-size:.85rem;color:#555"></p></section>
 </main>
-<footer>光谷房产信息 · guanggu.coderfather.com · 数据更新于 2026-10-15</footer>
+<footer>光谷房产信息 · guanggu.coderfather.com · <span id="updateDate"></span>更新</footer>
 <script>
-fetch('data.json').then(r=>r.json()).then(d=>{
+const COMMUNITIES=[
+{name:"新世界恒大华府",file:"data-hengdahuafu.json"},
+{name:"蓝光·武汉COCO时代",file:"data-languang.json"}
+];
+let current=0;
+function renderTabs(){
+document.getElementById('tabs').innerHTML=COMMUNITIES.map((c,i)=>
+`<button class="tab${i===current?' active':''}" onclick="switchTo(${i})">${c.name}</button>`).join('');
+}
+function switchTo(i){current=i;load();}
+function esc(s){return (s==null?'':String(s));}
+function load(){
+renderTabs();
+fetch(COMMUNITIES[current].file).then(r=>r.json()).then(d=>{
+const avg=d.均价;
+const avgText=typeof avg==='string'?avg:(avg.安居客10月挂牌均价||avg.安居客挂牌均价||'');
+const saleN=d.在售.安居客在售套数||d.在售.在售套数||'';
+const rentN=d.出租.安居客在租套数||'';
 document.getElementById('stats').innerHTML=
-`<div class="stat"><b>${d.均价.安居客10月挂牌均价}</b><span>挂牌均价</span></div>
-<div class="stat"><b>${d.在售.安居客在售套数}套</b><span>在售（安居客）</span></div>
-<div class="stat"><b>${d.出租.安居客在租套数}套</b><span>在租（安居客）</span></div>`;
+`<div class="stat"><b>${esc(avgText)}</b><span>挂牌均价</span></div>
+<div class="stat"><b>${esc(saleN)}${saleN?'套':''}</b><span>在售</span></div>
+<div class="stat"><b>${esc(rentN)}${rentN?'套':''}</b><span>在租</span></div>`;
+const xq=d.小区;
 document.getElementById('profile').innerHTML=
-`建成${d.小区.建成年份}年 · ${d.小区.规模} · 主力面积段${d.小区.主力面积段} · 绿化率${d.小区.绿化率} · ${d.小区.交通}`;
-document.getElementById('saleCount').textContent=`安居客${d.在售.安居客在售套数}套 / 房天下${d.在售.房天下在售套数}套`;
-document.getElementById('saleList').innerHTML=d.在售.房源.map(x=>
-`<tr><td>${x.户型}</td><td>${x.面积}</td><td class="price">${x.总价}</td><td>${x.单价}</td><td>${x.朝向}</td><td>${x.备注||'-'}</td></tr>`).join('');
-document.getElementById('dealList').innerHTML=d.成交记录.map(x=>
-`<tr><td>${x.面积}</td><td class="price">${x.成交总价}</td><td>${x.成交单价}</td><td>${x.成交日期}</td></tr>`).join('');
-document.getElementById('rentCount').textContent=`安居客${d.出租.安居客在租套数}套`;
-document.getElementById('rentList').innerHTML=d.出租.房源.map(x=>
-`<tr><td>${x.户型}</td><td>${x.面积}</td><td class="price">${x.租金}</td><td>${x.朝向}</td><td>${x.楼层}</td></tr>`).join('');
+`${esc(xq.地址)} · 建成${esc(xq.建成年份)}年 · ${esc(xq.规模||'')} ${esc(xq.主力面积段?'主力面积段'+xq.主力面积段:'')} · ${esc(xq.交通||'')}`;
+document.getElementById('disclaimer').textContent=
+'数据来自公开房源平台，采集于 '+d.采集日期+'，仅供参考，不构成购房建议。房源实时变动，请以平台最新信息为准。';
+document.getElementById('saleCount').textContent=d.在售.在售套数?d.在售.在售套数:'';
+document.getElementById('saleList').innerHTML=(d.在售.房源||[]).map(x=>
+`<tr><td>${esc(x.户型)}</td><td>${esc(x.面积)}</td><td class="price">${esc(x.总价)}</td><td>${esc(x.单价)}</td><td>${esc(x.朝向)}</td><td>${esc(x.备注)||'-'}</td></tr>`).join('');
+const deals=d.成交记录.记录||d.成交记录||[];
+if(Array.isArray(deals)&&deals.length){
+document.getElementById('dealSection').style.display='';
+document.getElementById('dealList').innerHTML=deals.map(x=>
+`<tr><td>${esc(x.面积)}</td><td class="price">${esc(x.成交总价)}</td><td>${esc(x.成交单价)}</td><td>${esc(x.成交日期)}</td></tr>`).join('');
+}else{
+document.getElementById('dealSection').style.display='none';
+}
+document.getElementById('rentCount').textContent=d.出租.在租套数?d.出租.在租套数:'';
+document.getElementById('rentList').innerHTML=(d.出租.出租房源||d.出租.房源||[]).map(x=>
+`<tr><td>${esc(x.户型)}</td><td>${esc(x.面积)}</td><td class="price">${esc(x.租金)}</td><td>${esc(x.备注||x.朝向||'')}${x.楼层?' · '+esc(x.楼层):''}</td></tr>`).join('');
+const src=d.数据来源;
+document.getElementById('sources').innerHTML=Object.entries(src).filter(([k])=>k!=='备注').map(([k,v])=>`${esc(k)}：${esc(v)}`).join('<br>')+(src.备注?'<br>'+esc(src.备注):'');
+document.getElementById('updateDate').textContent=d.采集日期;
 });
+}
+load();
 </script>
 </body>
 </html>
